@@ -37,7 +37,7 @@ def get_model():
     """
     
     # Load the VGG19 model that was trained using ImageNet data
-    vgg = tf.keras.applications.vgg19.VGG19(include_top=False, weights='imagenet')
+    vgg = tf.keras.applications.vgg19.VGG19(include_top=False, weights='imagenet', pooling='avg')
     # Since this model is already pretrained, we will set it to not trainable
     vgg.trainable = False
     # Retrieve outputs based on the style and content layers
@@ -51,7 +51,7 @@ def get_model():
     
 # Content Loss Function
 def get_content_loss(base_content, target):
-    return tf.reduce_mean(tf.square(base_content - target))
+    return tf.reduce_mean(tf.square(base_content - target)) 
 
 
 # Generate the Gram Matrix
@@ -142,7 +142,7 @@ def compute_loss(model, loss_weights, init_img, gram_style_features, content_fea
     for target_style, comb_style in zip(gram_style_features, style_output_features):
         style_score += weight_per_style_layer*get_style_loss(comb_style[0], target_style)
         
-    weight_per_content_layer = 1.0/float(num_content_layers)
+    weight_per_content_layer = 0.2/float(num_content_layers)
     for target_content, comb_content in zip(content_features, content_output_features):
         content_score += weight_per_content_layer*get_content_loss(comb_content[0], target_content)
         
@@ -161,7 +161,7 @@ def compute_grads(cfg):
     total_loss = all_loss[0]
     return tape.gradient(total_loss, cfg['init_img']), all_loss
 
-def run_style_transfer(content_path, style_path, num_iterations = 1000, content_weight = 5e0, style_weight = 1e2):
+def run_style_transfer(content_path, style_path, num_iterations = 1000, content_weight = 5e0, style_weight = 5e2):
     model = get_model()
     for layer in model.layers:
         layer.trainable = False
@@ -175,7 +175,7 @@ def run_style_transfer(content_path, style_path, num_iterations = 1000, content_
     init_img = tf.Variable(init_img, dtype = tf.float32)
     
     # Create the optimizer
-    opt = tf.keras.optimizers.Adam(learning_rate = 10, beta_1 = 0.9, epsilon = 1e-1)
+    opt = tf.keras.optimizers.Adam(learning_rate = 1e1, beta_1 = 0.9, beta_2=0.999, epsilon = 1e-8)
     #opt = tf.keras.optimizers.Adam(learning_rate = 5, beta_1 = 0.99, epsilon = 1e-1)
     
     # For displaying intermediate images

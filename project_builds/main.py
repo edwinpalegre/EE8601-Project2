@@ -10,9 +10,15 @@ import tensorflow as tf
 import image_utils as Image
 import model as Model
 
+import os
+import glob
 
-content_path = 'input/toronto.jpg'
-style_path = 'input/style_starrynight.jpg'
+files = glob.glob('output/*')
+for f in files:
+    os.remove(f)
+
+content_path = 'input/content/edwin.jpg'
+style_path = 'input/style/ironman.jpg'
 
 content = Image.img_load(content_path).astype('uint8')
 style = Image.img_load(style_path).astype('uint8')

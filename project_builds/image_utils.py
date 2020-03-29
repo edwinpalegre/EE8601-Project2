@@ -12,26 +12,17 @@ from tensorflow.python.keras.preprocessing import image as tf_image
 
 
 def img_load(img_path):
-    max_dim = 1024
+    max_dim = 512
     img = Image.open(img_path)
     img_size = max(img.size)
     scale = max_dim/img_size
-    img = img.resize((round(img.size[0]*scale), round(img.size[1]*scale)), Image.ANTIALIAS)
+    # Possibly try Image.BILINEAR instead?
+    img = img.resize((round(img.size[0]*scale), round(img.size[1]*scale)), Image.BILINEAR)
     img = tf_image.img_to_array(img)
     
     # Image needs to be broadcasted so that it has a dimension for the batch
     img = np.expand_dims(img, axis=0)
     return img
-
-# def imshow(img, title=None):
-#     # Remove the batch dimension
-#     out = np.squeeze(img, axis=0)
-    
-#     # Normalize for display
-#     out = out.astype('uint8')
-#     if title is not None:
-#         plt.title(title)
-#     plt.imshow(out)
     
 def load_process_img(img_path):
     img = img_load(img_path)
