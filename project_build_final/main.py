@@ -39,6 +39,8 @@ style_layers = ['block1_conv1',
 num_content_layers = len(content_layers)
 num_style_layers = len(style_layers)
 
+# MODEL UTILITIES - FUNCTION 1 - VGG19 LAYERS
+
 def get_vggLayers(style_or_content_layers):
     """
     Creates the model with intermediate layer access
@@ -66,6 +68,8 @@ def get_vggLayers(style_or_content_layers):
     model = tf.keras.Model(vgg_input, vgg_output)
 
     return model
+
+# MODEL UTILITIES - FUNCTION 2 - THE GRAM MATRIX
 
 def gram_matrix(input_tensor):
   """
@@ -100,6 +104,8 @@ def gram_matrix(input_tensor):
   # Generate the Gram matrix as a tensor for use in our model
   gram_tensor = gram[tf.newaxis, :]
   return gram_tensor
+
+# MODEL UTILITIES - FUNCTION 3 - STYLE & CONTENT MODEL CLASS
 
 class StyleContentModel(tf.keras.models.Model):
   def __init__(self, style_layers, content_layers):
@@ -157,6 +163,8 @@ optimizer = tf.optimizers.Adam(learning_rate=0.02, beta_1=0.99, epsilon=1e-8)
 # The Alpha value corresponds to content weight and the Beta corresponds to the style weight. Let's define these
 alpha = 1e4
 beta = 10
+
+# MODEL UTILITIES - FUNCTION 4 - STYLE, CONTENT, & TOTAL LOSS FUNCTIONS
 
 # Now we define our loss functions
 def style_content_loss(outputs):
